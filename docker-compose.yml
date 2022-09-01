@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  django:
+    build: .
+    container_name: django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/user/src/app
+    restart: always
+    ports:
+      - '8000:8000'
+    depends_on:
+      - pgdb
+
+  pgdb:
+    image: postgres
+    ports:
+      - '5432:5432'
+    container_name: pgdb
+
+    environment:
+      - POSTGRES_DB=django_project
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready u - Postgres' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5

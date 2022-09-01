@@ -1,0 +1,128 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$320000$hoW53EykreGKqeBmJMTOyj$UG6Bjksw5lXGD1MxFCu52vPSIlNX15iYVefZ2g9bNZo=",
+      "last_login": "2022-07-26T09:23:10.756Z",
+      "is_superuser": true,
+      "username": "yasinkomur",
+      "first_name": "",
+      "last_name": "",
+      "email": "ysnkomur@gmail.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2022-07-22T07:08:53.619Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$320000$WFfEgCMJIBXyKP1M5OhmXV$cZf9Zl5o3buUZFEL/EkIwusf2zpbiCKhhJaGO0x+zpM=",
+      "last_login": "2022-07-24T20:28:07.241Z",
+      "is_superuser": false,
+      "username": "yasinkomur2",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2022-07-24T15:17:18Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$320000$9H5s9vwXZxJIGqU8hk1wiv$reycPdFpwYR8jc9G3a0ovSwCkHvWLR3T4OIJN2RAHEQ=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "yasinkomur3",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2022-07-24T20:27:00.346Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$320000$9ReMkNvqbGvyxmv014Jh9F$R7pZzJSXLaZkna97SBx33SkKiO/92En06RilwF7fnrQ=",
+      "last_login": "2022-07-26T10:30:10.060Z",
+      "is_superuser": false,
+      "username": "yasin",
+      "first_name": "",
+      "last_name": "",
+      "email": "ysnkomur@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2022-07-26T09:54:32.404Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.profile",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "image": "default.jpg"
+    }
+  },
+  {
+    "model": "users.profile",
+    "pk": 4,
+    "fields": {
+      "user": 2,
+      "image": "profile_pics/avatar-d08f233696136ba8532cfdc3774061b9_l4dIfmu.jpg"
+    }
+  },
+  {
+    "model": "users.profile",
+    "pk": 5,
+    "fields": {
+      "user": 4,
+      "image": "profile_pics/large_KW6Jy3P.jpg"
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 1,
+    "fields": {
+      "title": "Blog 1",
+      "content": "First Post Content Updated",
+      "date_posted": "2022-07-24T17:45:07Z",
+      "author": 1
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 2,
+    "fields": {
+      "title": "Blog 2",
+      "content": "Second Post Content",
+      "date_posted": "2022-07-24T18:05:43Z",
+      "author": 2
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 3,
+    "fields": {
+      "title": "Blog 3",
+      "content": "Third Post Content",
+      "date_posted": "2022-07-24T18:14:45.396Z",
+      "author": 1
+    }
+  }
+]
