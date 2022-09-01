@@ -40,7 +40,7 @@ class UserPostListView(View):
 class PostDetailView(View):
     def get(self, request, *args, **kwargs):
         post_id = self.kwargs.get('pk')
-        post_detail = get_object_or_404(Post, post_id)
+        post_detail = get_object_or_404(Post, id=post_id)
         context = {"object": post_detail} 
         return render(request, "blog/post_detail.html", context)
 
