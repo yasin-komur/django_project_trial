@@ -6,9 +6,7 @@ from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .forms import CreateBlogPostForm
-from django.http import HttpResponse
-from django.template import loader
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator
 
 
 class PostListView(ListView):
@@ -42,7 +40,7 @@ class UserPostListView(View):
 class PostDetailView(View):
     def get(self, request, *args, **kwargs):
         post_id = self.kwargs.get('pk')
-        post_detail = Post.objects.get(id=post_id)
+        post_detail = get_object_or_404(Post, post_id)
         context = {"object": post_detail} 
         return render(request, "blog/post_detail.html", context)
 
