@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .forms import CreateBlogPostForm
 from django.http import HttpResponse
 from django.template import loader
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 class PostListView(ListView):
@@ -18,24 +19,17 @@ class PostListView(ListView):
     paginate_by = 4
 
 
-# class UserPostListView(ListView):
-#     model = Post
-#     template_name = 'blog/user_posts.html'
-#     context_object_name = 'posts'
-#     paginate_by = 10
-#
-#     def get_queryset(self):
-#         user = get_object_or_404(User, username=self.kwargs.get('username'))
-#         return Post.objects.filter(author=user).order_by('-date_posted')
-
-
 class UserPostListView(View):
     def get(self, request, *args, **kwargs):
-        user = request.user
-        posts = Post.objects.filter(author=user).order_by("-date_posted")
-        template = loader.get_template("blog/user_posts.html")
-        context = {"posts": posts}
-        return HttpResponse(template.render(context, request))
+        username = self.kwargs.get('username')
+        posts = Post.objects.filter(author__username=username).order_by("-date_posted")
+
+        paginator = Paginator(posts, 10)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context = {"posts": page_obj, "is_paginated": True}
+        return render(request, "blog/user_posts.html", context)
 
 
 # class PostListView(View):
@@ -45,8 +39,12 @@ class UserPostListView(View):
 #         return render(request, 'blog/home.html', context)
 
 
-class PostDetailView(DetailView):
-    model = Post
+class PostDetailView(View):
+    def get(self, request, *args, **kwargs):
+        post_id = self.kwargs.get('pk')
+        post_detail = Post.objects.get(id=post_id)
+        context = {"object": post_detail} 
+        return render(request, "blog/post_detail.html", context)
 
 
 # class PostCreateView(LoginRequiredMixin, CreateView):
