@@ -1,6 +1,8 @@
 {% extends 'blog/base.html' %}
+{% load static %}
 
 {% block content %}
+
     <article class="media content-section">
         <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
         <div class="media-body">
@@ -16,8 +18,22 @@
                 {% endif %}
             </div>
             <h2 class="article-title">{{ object.title }}</h2>
-            <p class="article-content">{{ object.content }}</p>
+            <!-- <p class="article-content">{{ object.content }}</p> -->
+            {{ object.content | safe }}
         </div>
     </article>
-{% endblock content %}
 
+    {% if not post.comments.all %}
+        <h2>No comments yet!</h2>
+    {% else %}
+        {% for comment in posts.comments.all %}
+            <strong>
+                {{ comment.name }}
+                {{ comment.date_added }}
+            </strong>
+            <br/>
+            {{ comment.body }}
+        {% endfor %}
+    {% endif %}
+
+{% endblock content %}

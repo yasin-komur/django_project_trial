@@ -2,105 +2,90 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from blog.dummy_data import posts
 from .models import Post
+from .models import Comment
 from django.contrib.auth.models import User
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .forms import CreateBlogPostForm
-from django.http import HttpResponse
-from django.template import loader
+from django.core.paginator import Paginator
+from .forms import CommentForm
 
 
-class PostListView(ListView):
-    model = Post
-    template_name = 'blog/home.html'
-    context_object_name = 'posts'
-    ordering = ['-date_posted']
-    paginate_by = 4
+class PostListView(View):
+    def get(self, request, *args, **kwargs):
+        data = Post.objects.all().order_by("-date_posted")
+        paginator = Paginator(data, 4)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
 
-
-# class UserPostListView(ListView):
-#     model = Post
-#     template_name = 'blog/user_posts.html'
-#     context_object_name = 'posts'
-#     paginate_by = 10
-#
-#     def get_queryset(self):
-#         user = get_object_or_404(User, username=self.kwargs.get('username'))
-#         return Post.objects.filter(author=user).order_by('-date_posted')
+        context = {"posts": page_obj, "is_paginated": True}
+        return render(request, "blog/home.html", context)
 
 
 class UserPostListView(View):
     def get(self, request, *args, **kwargs):
-        user = request.user
-        posts = Post.objects.filter(author=user).order_by("-date_posted")
-        template = loader.get_template("blog/user_posts.html")
-        context = {"posts": posts}
-        return HttpResponse(template.render(context, request))
+        username = self.kwargs.get('username')
+        posts = Post.objects.filter(
+            author__username=username).order_by("-date_posted")
+
+        paginator = Paginator(posts, 10)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context = {"posts": page_obj, "is_paginated": True}
+        template_name = "blog/user_posts.html"
+        return render(request, template_name, context)
 
 
-# class PostListView(View):
-#
-#     def get(self, request):
-#         context = {"posts": Post.objects.all()}
-#         return render(request, 'blog/home.html', context)
+class PostDetailView(View):
+    def get(self, request, *args, **kwargs):
+        post_id = self.kwargs.get('pk')
+        post_detail = get_object_or_404(Post, id=post_id)
+        form = CommentForm(request.POST)
+        context = {"object": post_detail, "post": posts, 'comment': form}
+        template_name = "blog/post_detail.html"
+        return render(request, template_name, context)
 
 
-class PostDetailView(DetailView):
-    model = Post
+class PostCreateView(LoginRequiredMixin, View, UserPassesTestMixin):
+    login_url = '/login/'
+    redirect_field_name = 'blog-home'
 
-
-# class PostCreateView(LoginRequiredMixin, CreateView):
-#     model = Post
-#     fields = ['title', 'content']
-#
-#     def form_valid(self, form):
-#         form.instance.author = self.request.user
-#         return super().form_valid(form)
-
-class PostCreateView(View):
     def get(self, request):
         form = CreateBlogPostForm()
-        return render(request,'blog/post_create.html' ,{'form':form})
+        return render(request, 'blog/post_form.html', {'form': form})
 
     def post(self, request):
-        form=CreateBlogPostForm(request.POST)
+        form = CreateBlogPostForm(request.POST)
         if form.is_valid():
             new_post = Post(**form.cleaned_data, author=request.user)
             new_post.save()
         return redirect('blog-home')
 
 
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Post
-    fields = ['title', 'content']
+class PostUpdateView(LoginRequiredMixin, View, UserPassesTestMixin):
+    login_url = '/login/'
+    redirect_field_name = '/login/'
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+    def get(self, request, *args, **kwargs):
+        post_id = self.kwargs.get('pk')
+        obj = Post.objects.get(id=post_id)
+        form = CreateBlogPostForm(instance=obj)
+        return render(request, "blog/post_form.html", {"form": form})
 
-    def test_func(self):
-        post = self.get_object()
-        if self.request.user == post.author:
-            return True
-        return False
+    def post(self, request, *args, **kwargs):
+        post_id = self.kwargs.get('pk')
+        obj = Post.objects.get(id=post_id)
+        form = CreateBlogPostForm(request.POST, instance=obj)
+        if form.is_valid():
+            form.save()
+        return redirect('blog-home')
 
-
-# class PostDeleteView(DeleteView, LoginRequiredMixin, UserPassesTestMixin):
-#     model = Post
-#     success_url = '/'
-#
-#     def test_func(self):
-#         post = self.get_object()
-#         if self.request.user == post.author:
-#             return True
-#         return False
 
 class PostDeleteView(View):
     def post(self, request, pk):
         post = Post.objects.get(pk=pk)
         post.delete()
         return redirect('blog-home')
-
 
 
 class HomeView(View):
@@ -122,6 +107,3 @@ class AboutView(View):
 
     def get(self, request):
         return render(request, self.template_name, self.context)
-
-
-
