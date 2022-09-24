@@ -9,6 +9,7 @@
             <div class="article-metadata">
                 <a class="mr-2" href="{% url 'user_posts' object.author.username %}">{{ object.author }}</a>
                 <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
+                <br/>
                 {% if object.author == user %}
                     <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a>
                     <form method="POST" action="{% url 'post-delete' object.id %}">
@@ -18,22 +19,33 @@
                 {% endif %}
             </div>
             <h2 class="article-title">{{ object.title }}</h2>
-            <!-- <p class="article-content">{{ object.content }}</p> -->
+{#            <p class="article-content">{{ object.content }}</p>#}
             {{ object.content | safe }}
         </div>
-    </article>
 
-    {% if not post.comments.all %}
+    </article>
+    <br/>
+    <br/>
+    <h2>Likes</h2>
+    <form action="{% url 'like-post' object.pk %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" name="post_id" value="{{ object.id }}"
+                class="btn btn-primary btn-sm">Like</button>
+    </form>
+
+    <br/>
+    <br/>
+    {% if not object.comments.all %}
         <h2>No comments yet!</h2>
     {% else %}
-        {% for comment in posts.comments.all %}
+        {% for comment in object.comments.all %}
             <strong>
                 {{ comment.name }}
                 {{ comment.date_added }}
-            </strong>
-            <br/>
+            </strong> <br/>
             {{ comment.body }}
+            <br/>
+            <br/>
         {% endfor %}
     {% endif %}
-
 {% endblock content %}

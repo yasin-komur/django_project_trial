@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.views import View
 from blog.dummy_data import posts
 from .models import Post
@@ -8,6 +9,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .forms import CreateBlogPostForm
 from django.core.paginator import Paginator
 from .forms import CommentForm
+from django.http import HttpResponseRedirect
+# annotate, agreegate, ORM, jquery-html-ajax (sayfa yenileme), javascript, view parçalama, biraz daha karmaşık yazma,
+# crud yorum için de, başka crud uğraşma, ekranlara filtreler uygula, toplam okuma, üye sayısı, bir kişi 2 farklı kulüpte aynı postu yayınlayabilir,
+# basketol-beşiktaş, chat eklenebilir
 
 
 class PostListView(View):
@@ -40,8 +45,8 @@ class PostDetailView(View):
     def get(self, request, *args, **kwargs):
         post_id = self.kwargs.get('pk')
         post_detail = get_object_or_404(Post, id=post_id)
-        form = CommentForm(request.POST)
-        context = {"object": post_detail, "post": posts, 'comment': form}
+        # form = CommentForm(request.POST)
+        context = {"object": post_detail, "post": posts}
         template_name = "blog/post_detail.html"
         return render(request, template_name, context)
 
@@ -107,3 +112,12 @@ class AboutView(View):
 
     def get(self, request):
         return render(request, self.template_name, self.context)
+
+
+class LikeView(View):
+
+    def get(self, request, pk):
+        post = get_object_or_404(Post, request.POST.get('post_id'))
+        post.likes.add(request.user)
+        return HttpResponseRedirect(reverse('post-detail', args=[str(pk)]))
+

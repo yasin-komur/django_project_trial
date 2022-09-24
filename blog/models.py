@@ -10,6 +10,7 @@ class Post(models.Model):
     content = RichTextField(blank=True)
     date_posted = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    likes = models.ManyToManyField(User, related_name='blog_post_likes')
 
     def __str__(self):
         return self.title
@@ -26,5 +27,4 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.post.title + "-" + self.name
-
 
